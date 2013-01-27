@@ -1,0 +1,133 @@
+.input-tag{
+
+}
+
+.input-tag-mode-write{}
+
+.input-tag-mode-select-box{}
+
+.input-tag-mode-read-only{}
+
+.input-tag-list{
+    font-family:Arial,Helvetica;
+    font-size:12px;
+    cursor: text;
+}
+
+.input-tag-list-tags{
+    zoom: 1;
+    overflow: hidden;
+    margin: 0;
+    padding: 3px 4px 0;
+    border: 1px solid #999;
+}
+
+.input-tag-list-item{
+    list-style-type: none;
+    float: left;
+    display: block;
+    padding: 0;
+    margin: 0 5px 3px 0;
+    cursor: default;
+}
+
+.input-tag-list-box{
+    position: relative;
+    line-height: 18px;
+    padding: 0 5px;
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px;
+    border-radius: 9px;
+    border: 1px solid #CAD8F3;
+    background: #DEE7F8;
+    cursor: default;
+}
+
+
+.input-tag-list-item-hover{
+    background: #BBCEF1;
+    border: 1px solid #6D95E0;
+}
+
+.input-tag-list-item-focus{
+    border-color: #598BEC;
+    background: #598BEC;
+    color: #fff;
+}
+
+.input-tag-list-tag-focus .input-tag-list-tag-delete{
+    background-position: bottom;
+}
+
+.input-tag-list-item-deletable {
+    padding-right: 15px;
+}
+
+.input-tag-list-tag-delete{
+    position: absolute;
+    right: 4px;
+    top: 6px;
+    display: block;
+    width: 7px;
+    height: 7px;
+    font-size: 1px;
+    background: url('close.gif');
+    cursor: pointer;
+}
+
+
+.gwt-input-tag-list-tag-delete:hover {
+    border: none;
+    background-position: 7px;
+    text-decoration: none;
+}
+
+/* cely srac */
+.input-tag-list-tag-editable { 
+    border: 1px solid #fff;
+}
+
+/* input */
+
+.input-tag-list-tag-input {
+    border: 0;
+    padding: 2px 0;
+    padding-bottom: 0;
+    height: 17px;
+    font: 12px Arial,Helvetica;;
+    width: 50px
+}
+.input-tag-list-tag-input:focus { 
+    outline: 0;
+}
+
+.tags-suggestion-wrapper{
+    position: absolute; 
+    z-index:999;
+}
+
+
+.tags-suggestion-list {    
+    background-color: #fff;
+    -webkit-box-shadow: 0 3px 3px #ccc;
+    -moz-box-shadow: 0 3px 3px #ccc;
+    box-shadow: 0 3px 3px #ccc;
+    border: 1px solid #999;
+    border-top: none;
+    display: none;
+    margin: 0; padding: 0;    
+}
+
+
+.tags-suggestion-list-suggestion {
+    margin: 0;
+    padding: 5px;
+    list-style-type: none;    
+    cursor: pointer;
+}
+
+.tags-suggestion-list-suggestion-focus {
+    background: #C6D9E4;    
+}
+
+
