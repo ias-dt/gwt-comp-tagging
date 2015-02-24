@@ -24,21 +24,41 @@ public class TaggingEntryPoint implements EntryPoint {
         items.add(new StringTag("Tag 2", "Tag 2"));
         items.add(new StringTag("Tag 3", "Tag 3"));
 
-        InputTag<StringTag> ti1 = new InputTag<StringTag>(items);
+        InputTag<StringTag> ti1 = new InputTag<StringTag>(items) {
+				@Override
+				protected StringTag createNewTag(String value) {
+					return new StringTag(null, value);
+				}
+		};
         ti1.setAllowWhiteSpaceInTag(true);
         ti1.setWidth("400px");
         ti1.setSuggestionDelegate(new SuggestionDelegateMock());
 
-        InputTag<StringTag> ti2 = new InputTag<StringTag>(items);
+        InputTag<StringTag> ti2 = new InputTag<StringTag>(items) {
+				@Override
+				protected StringTag createNewTag(String value) {
+					return new StringTag(null, value);
+				}
+		};
         ti2.setWidth("400px");
         ti2.setMode(InputTag.Mode.READ);
 
-        InputTag<StringTag> ti3 = new InputTag<StringTag>(items);
+        InputTag<StringTag> ti3 = new InputTag<StringTag>(items) {
+				@Override
+				protected StringTag createNewTag(String value) {
+					return new StringTag(null, value);
+				}
+		};
         ti3.setWidth("400px");
         ti3.setSuggestionDelegate(new SuggestionDelegateMock());
         ti3.setMode(InputTag.Mode.SELECT_BOX);
         
-        SelectBoxInputTag<StringTag> ti4 = new SelectBoxInputTag<StringTag>();
+        SelectBoxInputTag<StringTag> ti4 = new SelectBoxInputTag<StringTag>() {
+				@Override
+				protected StringTag createNewTag(String value) {
+					return new StringTag(null, value);
+				}
+		};
         ti4.setSelectBoxTags(items);
         ti4.setWidth("400px");
                  

@@ -1,6 +1,4 @@
-.input-tag{
-
-}
+.input-tag{}
 
 .input-tag-mode-write{}
 
@@ -43,7 +41,6 @@
     cursor: default;
 }
 
-
 .input-tag-list-item-hover{
     background: #BBCEF1;
     border: 1px solid #6D95E0;
@@ -75,7 +72,6 @@
     cursor: pointer;
 }
 
-
 .gwt-input-tag-list-tag-delete:hover {
     border: none;
     background-position: 7px;
@@ -106,7 +102,6 @@
     z-index:999;
 }
 
-
 .tags-suggestion-list {    
     background-color: #fff;
     -webkit-box-shadow: 0 3px 3px #ccc;
@@ -118,7 +113,6 @@
     margin: 0; padding: 0;    
 }
 
-
 .tags-suggestion-list-suggestion {
     margin: 0;
     padding: 5px;
@@ -129,5 +123,3 @@
 .tags-suggestion-list-suggestion-focus {
     background: #C6D9E4;    
 }
-
-

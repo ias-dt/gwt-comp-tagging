@@ -1,0 +1,18 @@
+apply plugin: 'java'
+
+repositories {
+	maven { url 'http://repo1.maven.org/maven2' }
+}
+
+version = '1.0.1'
+
+def gwtVersion = '2.6.1'
+
+dependencies {
+	compile(group: 'com.google.gwt', name: 'gwt-user', version: gwtVersion)
+	compile(group: 'com.google.gwt', name: 'gwt-dev', version: gwtVersion)
+}
+
+jar {
+	from sourceSets.main.allSource
+}
