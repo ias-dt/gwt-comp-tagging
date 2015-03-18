@@ -3,6 +3,8 @@ package com.google.code.gwt.component.tag;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -16,8 +18,8 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * @author Palo Gressa <gressa@acemcee.com>
@@ -87,7 +89,6 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 	private int caretLastPosition = 0;
 	private boolean allowWhiteSpaceInTag = false;
 	private boolean allowDuplicates = false;
-	private Timer t;
 	/**
 	 * Mode of tag input
 	 */
@@ -127,14 +128,14 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 		 */
 		Element tagListWrapeer = DOM.createDiv();
 		tagListWrapeer.setClassName("input-tag-list");
-		DOM.setEventListener(tagListWrapeer.<com.google.gwt.dom.client.Element> cast(), new EventListener() {
+		DOM.setEventListener(tagListWrapeer.<Element> cast(), new EventListener() {
 
 			@Override
 			public void onBrowserEvent(Event event) {
 				inputText.focus();
 			}
 		});
-		DOM.sinkEvents(tagListWrapeer.<com.google.gwt.dom.client.Element> cast(), Event.ONCLICK);
+		DOM.sinkEvents(tagListWrapeer.<Element> cast(), Event.ONCLICK);
 		return tagListWrapeer;
 	}
 
@@ -143,9 +144,6 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 			appendTag(tag);
 			resetInputText();
 			if (Mode.SELECT_BOX.equals(mode)) {
-				if (t != null) {
-					t.cancel();
-				}
 				inputTextChanged(true);
 			} else {
 				hideSuggestions();
@@ -157,6 +155,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 	private void initLayout(List<T> tags) {
 		// init main wrapper area
 		component = DOM.createDiv();
+
 		Element tagListWrapper = createTagWrapper();
 
 		// init list area
@@ -202,7 +201,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 		listItem.setClassName("input-tag-list-item");
 		listItem.setTabIndex(0);
 		// Set event listeners
-		DOM.setEventListener(listItem.<com.google.gwt.dom.client.Element> cast(), new EventListener() {
+		DOM.setEventListener(listItem.<Element> cast(), new EventListener() {
 
 			@Override
 			public void onBrowserEvent(Event event) {
@@ -216,8 +215,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 				}
 			}
 		});
-		DOM.sinkEvents(listItem.<com.google.gwt.dom.client.Element> cast(),
-				Event.FOCUSEVENTS | Event.ONMOUSEOUT | Event.ONMOUSEOVER | eventBits);
+		DOM.sinkEvents(listItem.<Element> cast(), Event.FOCUSEVENTS | Event.ONMOUSEOUT | Event.ONMOUSEOVER | eventBits);
 		return listItem;
 	}
 
@@ -237,11 +235,11 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 
 				if (event.getTypeInt() == Event.ONKEYDOWN &&
 						(event.getKeyCode() == KeyCodes.KEY_BACKSPACE || event.getKeyCode() == KeyCodes.KEY_DELETE)) {
-					removeTag(event.getEventTarget().<com.google.gwt.dom.client.Element> cast());
+					removeTag(event.getEventTarget().<Element> cast());
 				} else if (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == KeyCodes.KEY_LEFT) {
-					shiftFocusLeft(event.getEventTarget().<com.google.gwt.dom.client.Element> cast());
+					shiftFocusLeft(event.getEventTarget().<Element> cast());
 				} else if (event.getTypeInt() == Event.ONKEYDOWN && event.getKeyCode() == KeyCodes.KEY_RIGHT) {
-					shiftFocusRight(event.getEventTarget().<com.google.gwt.dom.client.Element> cast());
+					shiftFocusRight(event.getEventTarget().<Element> cast());
 				}
 			}
 		}, Event.ONKEYDOWN);
@@ -256,7 +254,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 		// delete tag
 		Element deleteAnchor = Document.get().createAnchorElement();
 		deleteAnchor.setClassName("input-tag-list-tag-delete");
-		DOM.setEventListener(deleteAnchor.<com.google.gwt.dom.client.Element> cast(), new EventListener() {
+		DOM.setEventListener(deleteAnchor.<Element> cast(), new EventListener() {
 
 			@Override
 			public void onBrowserEvent(Event event) {
@@ -265,7 +263,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 				}
 			}
 		});
-		DOM.sinkEvents(deleteAnchor.<com.google.gwt.dom.client.Element> cast(), Event.ONCLICK);
+		DOM.sinkEvents(deleteAnchor.<Element> cast(), Event.ONCLICK);
 		item.appendChild(deleteAnchor);
 		// insert into DOM
 		tagList.insertBefore(item, inputText.getParentElement());
@@ -410,7 +408,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 	protected void initializeInputText() {
 		inputText = (DOM.createInputText()).cast();
 		inputText.setClassName("input-tag-list-tag-input");
-		DOM.setEventListener(inputText.<com.google.gwt.dom.client.Element> cast(), new EventListener() {
+		DOM.setEventListener(inputText.<Element> cast(), new EventListener() {
 
 			@Override
 			public void onBrowserEvent(Event event) {
@@ -453,8 +451,9 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 					//
 				} else if (event.getTypeInt() == Event.ONFOCUS) {
 					inputText.getParentElement().addClassName("input-tag-list-tag-focus");
+
 					// we will show all suggestions
-					if (Mode.SELECT_BOX.equals(mode)) {
+					if (Mode.SELECT_BOX.equals(mode) || !inputText.getValue().isEmpty()) {
 						inputTextChanged(true);
 					}
 
@@ -464,22 +463,20 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 					//
 				} else if (event.getTypeInt() == Event.ONBLUR) {
 					inputText.getParentElement().removeClassName("input-tag-list-tag-focus");
-					/**
-					 * TODO(somebody): find better solution how to catch BLUR,
-					 * and hideSuggestions when focus was stolen by clicking on
-					 * suggestion. If we hide suggestion list too soon, then
-					 * ONCLICK event will be not fired and suggestion won't be
-					 * selected.
-					 */
-					t = new Timer() {
+
+					// check if new focus is outside of our widget element, then hide suggestions
+					Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
 						@Override
-						public void run() {
-							hideSuggestions();
-							t = null;
+						public void execute() {
+							Element focusedElement = getFocusedElement();
+
+							if (!getElement().isOrHasChild(focusedElement)) {
+								hideSuggestions();
+							}
 						}
-					};
-					t.schedule(100);
+
+					});
 
 					//
 					// Handles update of caret position (to decide whether to jump to previous tag
@@ -488,7 +485,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 				} else if (event.getTypeInt() == Event.ONKEYDOWN) {
 					if ((caretLastPosition == 1 || caretLastPosition == 0) && getCursorPos(inputText) == 0) {
 						if (event.getKeyCode() == KeyCodes.KEY_BACKSPACE || event.getKeyCode() == KeyCodes.KEY_LEFT) {
-							shiftFocusLeft(inputText.getParentNode().<com.google.gwt.dom.client.Element> cast());
+							shiftFocusLeft(inputText.getParentNode().<Element> cast());
 							event.preventDefault(); // prevent history.back
 						}
 						caretLastPosition = getCursorPos(inputText);
@@ -503,16 +500,16 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 								if (hasNodeStyleClass(node, "tags-suggestion-list-suggestion-focus")) {
 									if (event.getKeyCode() == KeyCodes.KEY_DOWN) {
 										if (node.getNextSibling() != null) {
-											node.getNextSibling().<com.google.gwt.dom.client.Element> cast().addClassName(
+											node.getNextSibling().<Element> cast().addClassName(
 													"tags-suggestion-list-suggestion-focus");
-											node.<com.google.gwt.dom.client.Element> cast().removeClassName(
+											node.<Element> cast().removeClassName(
 													"tags-suggestion-list-suggestion-focus");
 										}
 									} else {
 										if (node.getPreviousSibling() != null) {
-											node.getPreviousSibling().<com.google.gwt.dom.client.Element> cast().addClassName(
+											node.getPreviousSibling().<Element> cast().addClassName(
 													"tags-suggestion-list-suggestion-focus");
-											node.<com.google.gwt.dom.client.Element> cast().removeClassName(
+											node.<Element> cast().removeClassName(
 													"tags-suggestion-list-suggestion-focus");
 										}
 									}
@@ -522,7 +519,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 							}
 							// we mark the first one
 							if (!found && event.getKeyCode() == KeyCodes.KEY_DOWN) {
-								suggestionList.getChild(0).<com.google.gwt.dom.client.Element> cast().addClassName(
+								suggestionList.getChild(0).<Element> cast().addClassName(
 										"tags-suggestion-list-suggestion-focus");
 							}
 						}
@@ -530,8 +527,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 				}
 			}
 		});
-		DOM.sinkEvents(inputText.<com.google.gwt.dom.client.Element> cast(), Event.ONKEYPRESS | Event.ONKEYDOWN | Event.ONKEYUP |
-				Event.FOCUSEVENTS);
+		DOM.sinkEvents(inputText.<Element> cast(), Event.ONKEYPRESS | Event.ONKEYDOWN | Event.ONKEYUP | Event.FOCUSEVENTS);
 		widthSpanTester = Document.get().createSpanElement();
 		widthSpanTester.setAttribute("style", "float: left; left: -1000px; position: absolute; display: inline-block;");
 
@@ -559,6 +555,14 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 		tagList.appendChild(item);
 	}
 
+	protected native Element getFocusedElement(Element element) /*-{
+		return element.ownerDocument.activeElement;
+	}-*/;
+
+	private Element getFocusedElement() {
+		return getFocusedElement(RootPanel.getBodyElement());
+	}
+
 	private void resetInputText() {
 		// reset input text
 		inputText.setValue("");
@@ -579,7 +583,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 		listItem.setClassName("tags-suggestion-list-suggestion");
 		listItem.setTabIndex(0);
 		// Set event listeners
-		DOM.setEventListener(listItem.<com.google.gwt.dom.client.Element> cast(), new EventListener() {
+		DOM.setEventListener(listItem.<Element> cast(), new EventListener() {
 
 			@Override
 			public void onBrowserEvent(Event event) {
@@ -589,7 +593,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 				//
 				if (event.getTypeInt() == Event.ONMOUSEOVER) {
 					for (int i = 0; i < suggestionList.getChildCount(); i++) {
-						suggestionList.getChild(i).<com.google.gwt.dom.client.Element> cast().removeClassName(
+						suggestionList.getChild(i).<Element> cast().removeClassName(
 								"tags-suggestion-list-suggestion-focus");
 					}
 					listItem.addClassName("tags-suggestion-list-suggestion-focus");
@@ -598,11 +602,10 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 					//
 				} else if (event.getTypeInt() == Event.ONCLICK) {
 					handleNewTag(tag);
-
 				}
 			}
 		});
-		DOM.sinkEvents(listItem.<com.google.gwt.dom.client.Element> cast(), Event.ONMOUSEOVER | Event.ONCLICK);
+		DOM.sinkEvents(listItem.<Element> cast(), Event.ONMOUSEOVER | Event.ONCLICK);
 		return listItem;
 	}
 
@@ -629,7 +632,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 	private static void shiftFocusLeft(Element listItem) {
 		Node sib = listItem.getPreviousSibling();
 		if (sib != null) {
-			sib.<com.google.gwt.dom.client.Element> cast().focus();
+			sib.<Element> cast().focus();
 		}
 	}
 
@@ -641,7 +644,7 @@ public abstract class InputTag<T extends Tag<?>> extends FocusWidget {
 	}
 
 	private static boolean hasNodeStyleClass(Node node, String className) {
-		String c = node.<com.google.gwt.dom.client.Element> cast().getClassName();
+		String c = node.<Element> cast().getClassName();
 		if (c != null && c.length() > 0) {
 			String[] classes = c.split(" ");
 			for (int i = 0; i < classes.length; i++) {
