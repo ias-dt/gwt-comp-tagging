@@ -5,7 +5,7 @@ repositories {
 	maven { url 'http://repo1.maven.org/maven2' }
 }
 
-version = '1.0.1'
+version = '1.0.2'
 
 def gwtVersion = '2.6.1'
 
